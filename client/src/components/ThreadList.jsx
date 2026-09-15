@@ -1,16 +1,11 @@
+import { useRef } from "react";
 import { useInfiniteQuery } from "@tanstack/react-query";
+import { useIntersection } from "../hooks/useIntersection.js";
 import { getThreads } from "../services/threads.service";
 import ThreadItem from "./ThreadItem.jsx";
 
-// Cursor pagination is already wired with useInfiniteQuery and a "Load More" button.
-//
-// YOUR TASK: replace the manual "Load More" button with automatic infinite scroll.
-//   1. Write a useIntersection(ref, onIntersect) hook (see src/hooks/useIntersection.js).
-//   2. Create a sentinelRef with useRef and render <div ref={sentinelRef} /> after the list.
-//   3. Build a guarded onIntersect: only fetchNextPage() when hasNextPage && !isFetchingNextPage.
-//   4. Call useIntersection(sentinelRef, onIntersect).
-//   5. Remove the "Load More" button; keep a "Loading more…" indicator driven by isFetchingNextPage.
 export default function ThreadList() {
+  const sentinelRef = useRef(null);
   const {
     data,
     fetchNextPage,
@@ -26,6 +21,14 @@ export default function ThreadList() {
     getNextPageParam: (lastPage) => lastPage.nextCursor ?? undefined,
   });
 
+  const onIntersect = () => {
+    if (hasNextPage && !isFetchingNextPage) {
+      fetchNextPage();
+    }
+  };
+
+  useIntersection(sentinelRef, onIntersect);
+
   if (isPending) return <p className="muted">Loading threads…</p>;
   if (isError) return <p className="error">Could not load threads: {error.message}</p>;
 
@@ -39,14 +42,8 @@ export default function ThreadList() {
         ))}
       </ul>
 
-      {/* TODO: replace this button with a sentinel div + useIntersection */}
-      {hasNextPage && (
-        <div className="load-more">
-          <button onClick={() => fetchNextPage()} disabled={isFetchingNextPage}>
-            {isFetchingNextPage ? "Loading more…" : "Load More"}
-          </button>
-        </div>
-      )}
+      {hasNextPage && <div ref={sentinelRef} className="sentinel" aria-hidden="true" />}
+      {isFetchingNextPage && <p className="muted">Loading more…</p>}
     </div>
   );
 }
