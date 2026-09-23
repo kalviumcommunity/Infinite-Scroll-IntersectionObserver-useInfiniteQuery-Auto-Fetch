@@ -5,11 +5,10 @@ export default function App() {
     <div className="wrap">
       <h1>Threadbase</h1>
       <p className="muted">
-        Cursor pagination is already wired with <code>useInfiniteQuery</code> and a
-        <code> Load More </code> button. Your job: replace the button with{" "}
-        <strong>automatic infinite scroll</strong> — a <code>useIntersection</code> hook
-        watching a sentinel <code>div</code> that calls <code>fetchNextPage</code> as you
-        scroll.
+        Cursor pagination is wired with <code>useInfiniteQuery</code>. Scroll through the
+        feed to trigger <strong>automatic infinite scroll</strong> — a{" "}
+        <code>useIntersection</code> hook watches a sentinel <code>div</code> and calls{" "}
+        <code>fetchNextPage</code> as you scroll.
       </p>
       <ThreadList />
     </div>
