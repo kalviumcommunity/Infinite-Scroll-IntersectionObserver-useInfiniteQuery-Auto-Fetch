@@ -14,6 +14,17 @@ import { useEffect } from "react";
 //   5. Dependency array: [ref, onIntersect].
 export function useIntersection(ref, onIntersect) {
   useEffect(() => {
-    // your code here
+    const element = ref.current;
+    if (!element) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) onIntersect();
+      },
+      { threshold: 0.1 },
+    );
+
+    observer.observe(element);
+    return () => observer.disconnect();
   }, [ref, onIntersect]);
 }
